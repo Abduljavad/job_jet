@@ -5,7 +5,9 @@ namespace App\Http\Services;
 use App\Http\Traits\ResponseTraits;
 use App\Models\User;
 use App\Notifications\SendOtpNotification;
+use App\Notifications\SendSmsNotification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class OtpServices
 {
@@ -18,17 +20,19 @@ class OtpServices
         return $otp;
     }
 
-    public function Store(User $user, $otp)
+    public function Store($mobileNumber, $otp)
     {
-        $hashedOtp = bcrypt($otp);
         $expiryTime = now()->addMinutes(10);
 
-        $user->update([
-            'otp' => $hashedOtp,
-            'otp_expire_at' => $expiryTime,
-        ]);
+        $user = User::updateOrCreate(
+            ['mobile' => $mobileNumber],
+            [
+                'password' => $otp,
+                'otp' => $otp,
+                'otp_expire_at' => $expiryTime,
+            ]);
 
-        return true;
+        return $user;
     }
 
     public function verify(User $user, $otp)
@@ -36,8 +40,9 @@ class OtpServices
         if (! $user || ! $otp) {
             return false;
         }
-
-        if (! Hash::check($otp, $user->otp) || (now() > $user->otp_expire_at)) {
+        Log::info(['otp' => Hash::check($otp, $user->password) , $otp]);
+        Log::info(['expire' => (now() > $user->otp_expire_at),'expire_at' => $user->otp_expire_at, 'current_time' => now()->toTimeString() ]);
+        if (! Hash::check($otp, $user->password) || (now() > $user->otp_expire_at)) {
             return false;
         }
 
@@ -46,6 +51,6 @@ class OtpServices
 
     public function send(User $user, $otp)
     {
-        $user->notify(new SendOtpNotification($otp));
+        $user->notify(new SendSmsNotification($otp));
     }
 }

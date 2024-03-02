@@ -11,20 +11,20 @@ class EngagespotServices
 {
     public function sendNotificationWithTemplate($templateID, $recipientId, $data = null, $icon = null)
     {
-        $user = User::with('profile')->find($recipientId);
-        $mobileNumber = $user->profile ? $user->profile->contact : null;
+        $user = User::find($recipientId);
+        $mobileNumber = $user->mobile ? $user->mobile : null;
 
         $notifcationContent = [
             'notification' => [
                 'templateId' => $templateID,
-                "icon" => $icon,
+                'icon' => $icon,
             ],
-            "data" => $data ?? null,
-            "recipients" => [strval($recipientId)],
+            'data' => $data ?? null,
+            'recipients' => [strval($recipientId)],
         ];
 
-
         $this->createOrUpdateUser($recipientId, $user->name, $user->email, $mobileNumber);
+
         return $this->engagespotApi($notifcationContent);
     }
 
@@ -32,25 +32,26 @@ class EngagespotServices
     {
         try {
             $spec = [
-                'name' => $name ??  null,
+                'name' => $name ?? null,
                 'email' => $email ?? null,
                 'phoneNumber' => $mobileNumber ?? null,
             ];
             Http::withHeaders([
-                'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'xruaybldq3lsq2x2x9ctz'),
-                'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', 'ko0eq3g41i90k3o0tid0bohcdbejaag256500ddd3i63f6ga'),
-            ])->put('https://api.engagespot.co/v3/users/' . $identifier, $spec);
+                'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'grl24pcq96vvwn5wx7gp5o'),
+                'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', '3am9m1gs62sa91nhamqdbami0d8jdd2e752fe40g8a81434'),
+            ])->put('https://api.engagespot.co/v3/users/'.$identifier, $spec);
         } catch (Exception $e) {
-            true;
+
         } catch (ErrorException $e) {
-            true;
+
         }
     }
+
     private function engagespotApi($notifcationSpec)
     {
         $response = Http::withHeaders([
-            'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'xruaybldq3lsq2x2x9ctz'),
-            'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', 'ko0eq3g41i90k3o0tid0bohcdbejaag256500ddd3i63f6ga'),
+            'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'grl24pcq96vvwn5wx7gp5o'),
+            'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', '3am9m1gs62sa91nhamqdbami0d8jdd2e752fe40g8a81434'),
         ])->post('https://api.engagespot.co/v3/notifications', $notifcationSpec);
 
         return $response;

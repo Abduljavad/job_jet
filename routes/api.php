@@ -20,4 +20,6 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::get('/profile', 'userProfile');
     Route::post('refresh-token', 'refreshToken');
     Route::post('logout', 'logout');
+    Route::post('send-otp', 'sendOtp');
+    Route::post('verify-otp', 'verify');
 });

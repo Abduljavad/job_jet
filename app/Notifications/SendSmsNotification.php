@@ -2,20 +2,23 @@
 
 namespace App\Notifications;
 
+use App\Broadcasting\EngagespotChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SendOtpNotification extends Notification
+class SendSmsNotification extends Notification
 {
     use Queueable;
+
+    public $otp;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($otp)
     {
-        //
+        $this->otp = $otp;
     }
 
     /**
@@ -25,7 +28,7 @@ class SendOtpNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return [EngagespotChannel::class];
     }
 
     /**
@@ -49,5 +52,15 @@ class SendOtpNotification extends Notification
         return [
             //
         ];
+    }
+
+    public function toEngageSpot($notifiable, $engagespotServices)
+    {
+        $recipientId = $notifiable->id;
+        $templateId = env('SEND_SMS_TEMPLATE_ID', '8890');
+        $data = [
+            'otp' => $this->otp,
+        ];
+        $response = ($engagespotServices->sendNotificationWithTemplate($templateId, $recipientId, $data));
     }
 }

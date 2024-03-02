@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Enums\TokenAbility;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\VerifyOtpRequest;
+use App\Http\Services\OtpServices;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -12,15 +14,18 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function __construct()
+    public $otpServices;
+
+    public function __construct(OtpServices $otpServices)
     {
-        $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ACCESS_API->value])->except(['superAdminlogin', 'register', 'refreshToken']);
+        $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ACCESS_API->value])->except(['superAdminlogin', 'sendOtp', 'refreshToken', 'verify']);
         $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ISSUE_ACCESS_TOKEN->value])->only('refreshToken');
+        $this->otpServices = $otpServices;
     }
 
     public function superAdminlogin(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->whereRelation('roles', 'name', 'user')->first();
+        $user = User::where('email', $request->email)->whereRelation('roles', 'name', 'super_admin')->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -31,11 +36,29 @@ class AuthController extends Controller
         return $this->getAccessTokenAndRefreshToken($user);
     }
 
-    public function register(RegisterRequest $registerRequest)
+    public function sendOtp(RegisterRequest $registerRequest)
     {
-        User::create($registerRequest->validated());
+        $mobileNumber = $registerRequest->mobile;
+        $otp = $this->otpServices->generate();
+        $user = $this->otpServices->Store($mobileNumber, $otp);
+        $this->otpServices->send($user, $otp);
 
-        return $this->successResponse('user registered successfully');
+        return $this->successResponse('otp send successfully ');
+    }
+
+    public function verify(VerifyOtpRequest $verifyOtpRequest)
+    {
+        $user = User::where('mobile', $verifyOtpRequest->mobile)->first();
+        if (! $user) {
+            return $this->errorResponse('Invalid User', 404);
+        }
+
+        $isVerified = $this->otpServices->verify($user, $verifyOtpRequest->otp);
+        if (! $isVerified) {
+            return $this->errorResponse('Invalid OTP', 400);
+        }
+
+        return $this->getAccessTokenAndRefreshToken($user);
     }
 
     public function userProfile()
