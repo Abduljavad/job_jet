@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -25,11 +26,17 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (AccessDeniedHttpException $e, Request $request) {
-            if ($request->is('api/auth/refresh-token')) {
+            if ($request->is('api/auth/*')) {
                 return response()->json([
                     'message' => 'invalid ability provided',
                 ], 403);
             }
+        });
+
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            return response()->json([
+                'message' => 'Model Not Found',
+            ], 403);
         });
     }
 }

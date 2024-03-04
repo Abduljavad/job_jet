@@ -8,6 +8,7 @@ use App\Notifications\SendOtpNotification;
 use App\Notifications\SendSmsNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class OtpServices
 {
@@ -32,6 +33,11 @@ class OtpServices
                 'otp_expire_at' => $expiryTime,
             ]);
 
+        if(!$user->hasRole('user')){
+            $userRole = Role::findByName('user');
+            $user->assignRole($userRole);
+        }
+        
         return $user;
     }
 

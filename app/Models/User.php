@@ -29,6 +29,7 @@ class User extends Authenticatable
         'mobile',
         'otp',
         'otp_expire_at',
+        'stripe_customer_id'
     ];
 
     /**
@@ -56,5 +57,10 @@ class User extends Authenticatable
         return Attribute::make(
             set: fn (string $value) => bcrypt($value),
         );
+    }
+
+    public function user_subscriptions()
+    {
+        return $this->hasMany(UserSubscription::class);
     }
 }

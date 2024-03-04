@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\StripePaymentController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +26,12 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('send-otp', 'sendOtp');
     Route::post('verify-otp', 'verify');
 });
+
+Route::apiResource('subscriptions', SubscriptionController::class);
+Route::apiResource('categories', CategoryController::class);
+
+Route::controller(StripePaymentController::class)
+    ->prefix('checkout')->group(function () {
+        Route::post('create-payment-intent', 'createPaymentIntent');
+        Route::post('subscribe', 'subscribe');
+    });
