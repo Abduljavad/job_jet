@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->json('icon')->nullable();
             $table->json('image')->nullable();
+            $table->bigInteger('parent_id')->nullable();
             $table->timestamps();
         });
     }
