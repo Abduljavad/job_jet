@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +31,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
 
 Route::apiResource('subscriptions', SubscriptionController::class);
 Route::apiResource('categories', CategoryController::class);
+Route::apiResource('jobs', JobController::class);
+Route::apiResource('locations', LocationController::class);
 
 Route::controller(StripePaymentController::class)
     ->prefix('checkout')->group(function () {
