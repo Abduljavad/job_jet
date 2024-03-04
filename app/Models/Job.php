@@ -14,4 +14,10 @@ class Job extends Model
     protected $casts = [
         'image' => 'json'
     ];
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class,'job_category','job_id','category_id');
+    }
+
 }

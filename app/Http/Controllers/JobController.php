@@ -14,7 +14,7 @@ class JobController extends Controller
      */
     public function index(Request $request)
     {
-        return Job::paginate($request->input('limit',20));
+        return Job::paginate($request->input('limit', 20));
     }
 
     /**
@@ -22,7 +22,11 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
-        Job::create($request->validated());
+        $job = Job::create($request->validated());
+        if ($request->categories) {
+            $job->categories()->sync($request->categories);
+        }
+
         return $this->successResponse('job created successfully');
     }
 
@@ -31,7 +35,7 @@ class JobController extends Controller
      */
     public function show(Job $job)
     {
-        return $job;
+        return $job->load(['categories']);
     }
 
     /**
@@ -40,6 +44,8 @@ class JobController extends Controller
     public function update(UpdateJobRequest $request, Job $job)
     {
         $job->update($request->validated());
+        $job->categories()->sync($request->categories);
+
         return $this->successResponse('job updated successfully');
     }
 
@@ -49,6 +55,7 @@ class JobController extends Controller
     public function destroy(Job $job)
     {
         $job->delete();
+
         return $this->successResponse('job deleted successfully');
     }
 }

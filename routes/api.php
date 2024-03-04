@@ -6,6 +6,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,4 +39,10 @@ Route::controller(StripePaymentController::class)
     ->prefix('checkout')->group(function () {
         Route::post('create-payment-intent', 'createPaymentIntent');
         Route::post('subscribe', 'subscribe');
+    });
+
+Route::controller(UserController::class)->prefix('favourites')
+    ->group(function () {
+        Route::post('attach', 'attachFav');
+        Route::post('detach', 'detachFav');
     });

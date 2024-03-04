@@ -15,4 +15,10 @@ class Category extends Model
         'image' => 'json',
         'icon' => 'json',
     ];
+
+
+    public function jobs()
+    {
+        return $this->belongsToMany(Category::class,'job_category','category_id','job_id');
+    }
 }

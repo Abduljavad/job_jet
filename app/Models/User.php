@@ -29,7 +29,7 @@ class User extends Authenticatable
         'mobile',
         'otp',
         'otp_expire_at',
-        'stripe_customer_id'
+        'stripe_customer_id',
     ];
 
     /**
@@ -62,5 +62,10 @@ class User extends Authenticatable
     public function user_subscriptions()
     {
         return $this->hasMany(UserSubscription::class);
+    }
+
+    public function favourites()
+    {
+        return $this->belongsToMany(Job::class, 'favourites', 'user_id', 'job_id');
     }
 }

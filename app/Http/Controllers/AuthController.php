@@ -63,7 +63,7 @@ class AuthController extends Controller
 
     public function userProfile()
     {
-        return auth()->user();
+        return User::with('favourites')->findOrFail(auth()->user()->id);
     }
 
     public function refreshToken()
