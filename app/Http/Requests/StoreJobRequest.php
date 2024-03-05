@@ -33,6 +33,7 @@ class StoreJobRequest extends FormRequest
             'joining_time' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
             'categories' => 'array|exists:categories,id|required',
+            'status' => 'string|in:opened,closed|required',
         ];
     }
 }

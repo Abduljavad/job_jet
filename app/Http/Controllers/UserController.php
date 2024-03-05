@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -11,19 +12,30 @@ class UserController extends Controller
         $this->middleware('auth:sanctum');
     }
 
-    public function attachFav(Request $request){
+    public function profile(ProfileRequest $request)
+    {
+        auth()->user()->profile()->updateOrCreate(['user_id'=> auth()->user()->id], $request->validated());
+
+        return $this->successResponse('profile updated');
+    }
+
+    public function attachFav(Request $request)
+    {
         $request->validate([
-            'favourites' => 'array|required|exists:jobs,id'
+            'favourites' => 'array|required|exists:jobs,id',
         ]);
         auth()->user()->favourites()->attach($request->favourites);
+
         return $this->successResponse();
     }
 
-    public function detachFav(Request $request){
+    public function detachFav(Request $request)
+    {
         $request->validate([
-            'favourites' => 'array|exists:jobs,id'
+            'favourites' => 'array|exists:jobs,id',
         ]);
         auth()->user()->favourites()->detach($request->favourites);
+
         return $this->successResponse();
     }
 }

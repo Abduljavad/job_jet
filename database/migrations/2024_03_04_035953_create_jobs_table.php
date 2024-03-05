@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('salary')->nullable();
             $table->string('joining_time')->nullable();
             $table->boolean('is_active')->default(1)->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

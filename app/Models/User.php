@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Job::class, 'favourites', 'user_id', 'job_id');
     }
+
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
 }

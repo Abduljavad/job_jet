@@ -32,7 +32,10 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
 
 Route::apiResource('subscriptions', SubscriptionController::class);
 Route::apiResource('categories', CategoryController::class);
+
+Route::get('jobs/subscribed', [JobController::class, 'subscriptionBasedJobList']);
 Route::apiResource('jobs', JobController::class);
+
 Route::apiResource('locations', LocationController::class);
 
 Route::controller(StripePaymentController::class)
@@ -41,8 +44,9 @@ Route::controller(StripePaymentController::class)
         Route::post('subscribe', 'subscribe');
     });
 
-Route::controller(UserController::class)->prefix('favourites')
+Route::controller(UserController::class)->prefix('users')
     ->group(function () {
-        Route::post('attach', 'attachFav');
-        Route::post('detach', 'detachFav');
+        Route::post('/favourites/attach', 'attachFav');
+        Route::post('/favourites/detach', 'detachFav');
+        Route::post('profile/update', 'profile');
     });

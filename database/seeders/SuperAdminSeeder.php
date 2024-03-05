@@ -14,9 +14,11 @@ class SuperAdminSeeder extends Seeder
     public function run(): void
     {
         $superAdmin = User::firstOrCreate([
-            'full_name' => 'Super Admin',
             'email' => 'superadmin@jobjet.com',
             'password' => 'password',
+        ]);
+        $superAdmin->profile()->create([
+            'full_name' => 'super_admin',
         ]);
         $superAdminRole = Role::findByName('super_admin');
         $superAdmin->assignRole($superAdminRole);

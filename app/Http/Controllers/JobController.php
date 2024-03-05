@@ -9,9 +9,27 @@ use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->middleware('isSuperAdmin')->except([
+            'subscriptionBasedJobList', 'show',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
+    public function subscriptionBasedJobList(Request $request)
+    {
+        $userSubscriptionExist = auth()->user()->user_subscriptions()->latest()->first();
+        if (! $userSubscriptionExist) {
+            return $this->errorResponse("user doesn't have active subscription", 403);
+        }
+
+        return Job::whereDate('created_at', '<=', $userSubscriptionExist->end_date)->paginate($request->input('limit', 20));
+    }
+
     public function index(Request $request)
     {
         return Job::paginate($request->input('limit', 20));
