@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('notfound', function () {
+    return view('notFound');
+})->name('not-found');
+
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json(['message' => 'Dont be a pirate this is a Battle-Station']);
 });
