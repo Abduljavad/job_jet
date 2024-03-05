@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\StripePaymentController;
@@ -50,3 +51,5 @@ Route::controller(UserController::class)->prefix('users')
         Route::post('/favourites/detach', 'detachFav');
         Route::post('profile/update', 'profile');
     });
+
+Route::post('file-upload', [FileUploadController::class, 'store']);
