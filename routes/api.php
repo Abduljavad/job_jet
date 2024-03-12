@@ -43,6 +43,7 @@ Route::controller(StripePaymentController::class)
     ->prefix('checkout')->group(function () {
         Route::post('create-payment-intent', 'createPaymentIntent');
         Route::post('subscribe', 'subscribe');
+        Route::post('subscribe/trial', 'applyTrialSubscription');
     });
 
 Route::controller(UserController::class)->prefix('users')

@@ -61,7 +61,7 @@ class User extends Authenticatable
 
     public function user_subscriptions()
     {
-        return $this->hasMany(UserSubscription::class);
+        return $this->hasMany(UserSubscription::class)->orderBy('created_at','desc');
     }
 
     public function favourites()

@@ -16,9 +16,14 @@ class Category extends Model
         'icon' => 'json',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'meta_data',
+    ];
 
     public function jobs()
     {
-        return $this->belongsToMany(Category::class,'job_category','category_id','job_id');
+        return $this->belongsToMany(Category::class, 'job_category', 'category_id', 'job_id');
     }
 }

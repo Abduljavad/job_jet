@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Filters\JobFilter;
+use App\Http\Filters\QueryFilter;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
 use App\Models\Job;
@@ -20,19 +22,19 @@ class JobController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function subscriptionBasedJobList(Request $request)
+    public function subscriptionBasedJobList(Request $request, QueryFilter $filters)
     {
         $userSubscriptionExist = auth()->user()->user_subscriptions()->latest()->first();
         if (! $userSubscriptionExist) {
             return $this->errorResponse("user doesn't have active subscription", 403);
         }
 
-        return Job::whereDate('created_at', '<=', $userSubscriptionExist->end_date)->paginate($request->input('limit', 20));
+        return Job::with(['categories', 'location'])->whereDate('created_at', '<=', $userSubscriptionExist->end_date)->paginate($request->input('limit', 20));
     }
 
-    public function index(Request $request)
+    public function index(Request $request, JobFilter $filters)
     {
-        return Job::paginate($request->input('limit', 20));
+        return Job::with(['categories', 'location'])->filter($filters)->paginate($request->input('limit', 20));
     }
 
     /**

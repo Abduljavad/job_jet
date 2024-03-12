@@ -136,4 +136,27 @@ class StripePaymentController extends Controller
     {
         return $price * 100;
     }
+
+    public function applyTrialSubscription()
+    {
+        $subscriptionsExist = auth()->user()->user_subscriptions()->exists();
+        if($subscriptionsExist){
+            return $this->errorResponse('Trial Subscription already applied');
+        }
+        $trialSubscription = Subscription::where('is_trial',true)->firstOrFail();
+
+        $startDate = now();
+        $endDate = Carbon::parse($startDate)->addDays(2);
+
+        UserSubscription::create([
+            'user_id' => auth()->user()->id,
+            'subscription_id' => $trialSubscription->id,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'is_expired' => null,
+        ]);
+
+        return $this->successResponse('Trial Subscription created');
+
+    }
 }
