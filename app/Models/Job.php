@@ -12,6 +12,8 @@ class Job extends Model
 
     protected $guarded = ['id'];
 
+    protected $table = 'job_applications';
+    
     protected $casts = [
         'image' => 'json',
     ];

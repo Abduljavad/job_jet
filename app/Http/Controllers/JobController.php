@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\JobCreatedEvent;
 use App\Http\Filters\JobFilter;
 use App\Http\Filters\QueryFilter;
 use App\Http\Requests\StoreJobRequest;
@@ -46,6 +47,7 @@ class JobController extends Controller
         if ($request->categories) {
             $job->categories()->sync($request->categories);
         }
+        event(new JobCreatedEvent($job));
 
         return $this->successResponse('job created successfully');
     }
