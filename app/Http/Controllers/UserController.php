@@ -22,7 +22,7 @@ class UserController extends Controller
     public function attachFav(Request $request)
     {
         $request->validate([
-            'favourites' => 'array|required|exists:jobs,id',
+            'favourites' => 'array|required|exists:job_applications,id',
         ]);
         auth()->user()->favourites()->attach($request->favourites);
 
@@ -32,7 +32,7 @@ class UserController extends Controller
     public function detachFav(Request $request)
     {
         $request->validate([
-            'favourites' => 'array|exists:jobs,id',
+            'favourites' => 'array|exists:job_applications,id',
         ]);
         auth()->user()->favourites()->detach($request->favourites);
 
