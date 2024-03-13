@@ -31,4 +31,9 @@ class JobFilter extends QueryFilter
             $query->whereIn('id', $locationIds);
         });
     }
+
+    public function status($status = null)
+    {
+        return $this->builder->where('status', $status);
+    }
 }
