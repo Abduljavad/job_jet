@@ -29,6 +29,7 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout');
     Route::post('send-otp', 'sendOtp');
     Route::post('verify-otp', 'verify');
+    Route::post('change-password', 'changePassword');
 });
 
 Route::apiResource('subscriptions', SubscriptionController::class);

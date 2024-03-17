@@ -34,7 +34,8 @@ class UpdateJobRequest extends FormRequest
             'joining_time' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
             'categories' => 'array|exists:categories,id',
-            'status' => 'string|in:opened,closed'
+            'status' => 'string|in:opened,closed',
+            'document' => 'nullable',
         ];
     }
 }

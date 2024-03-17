@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Enums\TokenAbility;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\VerifyOtpRequest;
@@ -10,6 +11,7 @@ use App\Http\Services\OtpServices;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -63,7 +65,7 @@ class AuthController extends Controller
 
     public function userProfile()
     {
-        return User::with(['favourites','profile','user_subscriptions.subscription'])->withCount('user_subscriptions')->findOrFail(auth()->user()->id);
+        return User::with(['favourites', 'profile', 'user_subscriptions.subscription'])->withCount('user_subscriptions')->findOrFail(auth()->user()->id);
     }
 
     public function refreshToken()
@@ -94,5 +96,23 @@ class AuthController extends Controller
             'refresh_token' => $refreshToken->plainTextToken,
             'expire_at' => config('sanctum.ac_expiration'),
         ];
+    }
+
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $user = User::with('roles')->findOrFail(auth()->user()->id);
+
+        if (! $user->hasRole('super_admin')) {
+            throw new UnauthorizedException('Permission Denied');
+        }
+        if (! Hash::check($request->old_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'old_password' => ['old passwod is incorrect.'],
+            ]);
+        }
+
+        $user->update(['password' => $request->new_password]);
+
+        return $this->successResponse('password changed successfully');
     }
 }

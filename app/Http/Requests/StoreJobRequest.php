@@ -34,6 +34,7 @@ class StoreJobRequest extends FormRequest
             'is_active' => 'nullable|boolean',
             'categories' => 'array|exists:categories,id|required',
             'status' => 'string|in:opened,closed|required',
+            'document' => 'nullable',
         ];
     }
 }

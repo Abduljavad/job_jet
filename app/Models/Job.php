@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Filters\QueryFilter;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,9 +14,10 @@ class Job extends Model
     protected $guarded = ['id'];
 
     protected $table = 'job_applications';
-    
+
     protected $casts = [
         'image' => 'json',
+        'document' => 'json',
     ];
 
     public function categories()
