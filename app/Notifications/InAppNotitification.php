@@ -61,7 +61,7 @@ class InAppNotitification extends Notification implements ShouldQueue
     public function toEngageSpot($notifiable, $engagespotServices)
     {
         $recipientId = $notifiable->id;
-        $templateId = env('SEND_IN_APP_NOTIFICATION_TEMPLATE_ID', '8917');
+        $templateId = env('SEND_IN_APP_NOTIFICATION_TEMPLATE_ID', '9040');
         $data = [
             'category_name' => $this->category->name,
             'count' => $this->count,

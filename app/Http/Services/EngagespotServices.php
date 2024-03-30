@@ -37,8 +37,8 @@ class EngagespotServices
                 'phoneNumber' => $mobileNumber ?? null,
             ];
             Http::withHeaders([
-                'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'grl24pcq96vvwn5wx7gp5o'),
-                'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', '3am9m1gs62sa91nhamqdbami0d8jdd2e752fe40g8a81434'),
+                'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'n76ud46qb5yq8zhlg0l9'),
+                'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', '14lola3s59f6tmnfc6ll2166bgceicjfc10h50278dcg7ej6b'),
             ])->put('https://api.engagespot.co/v3/users/'.$identifier, $spec);
         } catch (Exception $e) {
 
@@ -50,8 +50,8 @@ class EngagespotServices
     private function engagespotApi($notifcationSpec)
     {
         $response = Http::withHeaders([
-            'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'grl24pcq96vvwn5wx7gp5o'),
-            'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', '3am9m1gs62sa91nhamqdbami0d8jdd2e752fe40g8a81434'),
+            'X-ENGAGESPOT-API-KEY' => env('ENGAGESPOT_API_KEY', 'n76ud46qb5yq8zhlg0l9'),
+            'X-ENGAGESPOT-API-SECRET' => env('ENGAGESPOT_API_SECRET', '14lola3s59f6tmnfc6ll2166bgceicjfc10h50278dcg7ej6b'),
         ])->post('https://api.engagespot.co/v3/notifications', $notifcationSpec);
 
         return $response;

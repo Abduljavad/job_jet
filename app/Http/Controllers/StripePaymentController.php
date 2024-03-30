@@ -24,7 +24,7 @@ class StripePaymentController extends Controller
 
     public function createPaymentIntent(CreatePaymentIntentRequest $createPaymentIntentRequest)
     {
-        $subscription = Subscription::findOrFail($createPaymentIntentRequest->subscription_id);
+        $subscription = Subscription::where('is_trial', false)->findOrFail($createPaymentIntentRequest->subscription_id);
 
         $paymentIntent = $this->stripe->paymentIntents->create([
             'amount' => $this->convertToStripeAmount($subscription->price),

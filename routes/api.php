@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\RazorPayPaymentController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
@@ -42,9 +43,15 @@ Route::apiResource('locations', LocationController::class);
 
 Route::controller(StripePaymentController::class)
     ->prefix('checkout')->group(function () {
-        Route::post('create-payment-intent', 'createPaymentIntent');
-        Route::post('subscribe', 'subscribe');
+        Route::post('stripe/create-payment-intent', 'createPaymentIntent');
+        Route::post('stripe/subscribe', 'subscribe');
         Route::post('subscribe/trial', 'applyTrialSubscription');
+    });
+
+Route::controller(RazorPayPaymentController::class)
+    ->prefix('checkout/razorpay')->group(function () {
+        Route::post('order/generate', 'createOrderId');
+        Route::post('order/verify', 'verify');
     });
 
 Route::controller(UserController::class)->prefix('users')

@@ -57,7 +57,7 @@ class SendSmsNotification extends Notification
     public function toEngageSpot($notifiable, $engagespotServices)
     {
         $recipientId = $notifiable->id;
-        $templateId = env('SEND_SMS_TEMPLATE_ID', '8890');
+        $templateId = env('SEND_SMS_TEMPLATE_ID', '9039');
         $data = [
             'otp' => $this->otp,
         ];
