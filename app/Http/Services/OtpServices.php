@@ -4,10 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Traits\ResponseTraits;
 use App\Models\User;
-use App\Notifications\SendOtpNotification;
 use App\Notifications\SendSmsNotification;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
 
 class OtpServices
@@ -26,18 +24,21 @@ class OtpServices
         $expiryTime = now()->addMinutes(10);
 
         $user = User::updateOrCreate(
-            ['mobile' => $mobileNumber],
+            [
+                'mobile' => $mobileNumber,
+                'is_admin' => false,
+            ],
             [
                 'password' => $otp,
                 'otp' => $otp,
                 'otp_expire_at' => $expiryTime,
             ]);
 
-        if(!$user->hasRole('user')){
+        if (! $user->hasRole('user')) {
             $userRole = Role::findByName('user');
             $user->assignRole($userRole);
         }
-        
+
         return $user;
     }
 
@@ -46,8 +47,6 @@ class OtpServices
         if (! $user || ! $otp) {
             return false;
         }
-        Log::info(['otp' => Hash::check($otp, $user->password) , $otp]);
-        Log::info(['expire' => (now() > $user->otp_expire_at),'expire_at' => $user->otp_expire_at, 'current_time' => now()->toTimeString() ]);
         if (! Hash::check($otp, $user->password) || (now() > $user->otp_expire_at)) {
             return false;
         }
