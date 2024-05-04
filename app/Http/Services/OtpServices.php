@@ -23,16 +23,20 @@ class OtpServices
     {
         $expiryTime = now()->addMinutes(10);
 
-        $user = User::updateOrCreate(
-            [
-                'mobile' => $mobileNumber,
-                'is_admin' => false,
-            ],
-            [
+        $user = User::firstOrCreate(['mobile' => $mobileNumber]);
+        
+        //bypassing admin users from creating otp
+        if ($user->is_admin) {
+            $user->update([
+                'otp_expire_at' => $expiryTime,
+            ]);
+        } else {
+            $user->update([
                 'password' => $otp,
                 'otp' => $otp,
                 'otp_expire_at' => $expiryTime,
             ]);
+        }
 
         if (! $user->hasRole('user')) {
             $userRole = Role::findByName('user');
