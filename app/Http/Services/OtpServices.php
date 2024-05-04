@@ -56,6 +56,11 @@ class OtpServices
 
     public function send(User $user, $otp)
     {
-        $user->notify(new SendSmsNotification($otp));
+        if (! $user->is_admin) {
+            $user->notify(new SendSmsNotification($otp));
+        } else {
+            $adminOtp = $user->otp;
+            $user->notify(new SendSmsNotification($adminOtp));
+        }
     }
 }
