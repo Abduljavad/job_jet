@@ -22,8 +22,8 @@ class RazorPayPaymentController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->razorPayKey = env('RAZORPAY_KEY_ID', 'rzp_test_5T0Juz5yCdvc5U');
-        $this->razorPayKeySecret = env('RAZORPAY_KEY_SECRET', 'LsDQ7SluiQcnuJ8pMrZyDjUk');
+        $this->razorPayKey = env('RAZORPAY_KEY_ID', 'rzp_live_Krw5ZVvhAlE3Hs');
+        $this->razorPayKeySecret = env('RAZORPAY_KEY_SECRET', 'RCGjItvkR5bibdnFY46w6AzT');
         $this->razorPayService = new Api($this->razorPayKey, $this->razorPayKeySecret);
     }
 
