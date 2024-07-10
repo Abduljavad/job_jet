@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Enums\Currency;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSubscriptionRequest extends FormRequest
 {
@@ -28,6 +30,7 @@ class StoreSubscriptionRequest extends FormRequest
             'description' => 'nullable',
             'price' => 'required|numeric',
             'is_trial' => 'nullable|boolean',
+            'currency' => ['required', Rule::enum(Currency::class)],
         ];
     }
 }

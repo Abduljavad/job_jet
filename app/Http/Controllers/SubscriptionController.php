@@ -11,7 +11,7 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:sanctum', 'isSuperAdmin'])->except(['index','show']);
+        $this->middleware(['auth:sanctum', 'isSuperAdmin'])->except(['index', 'show']);
     }
 
     /**
@@ -19,7 +19,7 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request)
     {
-        return Subscription::paginate($request->input('limit', 20));
+        return Subscription::ofCurrency($request)->paginate($request->input('limit', 20));
     }
 
     /**
