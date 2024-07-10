@@ -27,7 +27,7 @@ class RazorPayPaymentController extends Controller
         $this->razorPayKey = env('RAZORPAY_KEY_ID', 'rzp_live_Krw5ZVvhAlE3Hs');
         $this->razorPayKeySecret = env('RAZORPAY_KEY_SECRET', 'RCGjItvkR5bibdnFY46w6AzT');
         $this->razorPayService = new Api($this->razorPayKey, $this->razorPayKeySecret);
-        $this->currency = env('RAZOR_PAY_CURRENCY','INR');
+        $this->currency = env('RAZOR_PAY_CURRENCY', 'INR');
     }
 
     /**
@@ -41,7 +41,7 @@ class RazorPayPaymentController extends Controller
 
         $response = $this->razorPayService->order->create([
             'amount' => $this->convertIntoPaisa($subscription->price),
-            'currency' => $this->currency,
+            'currency' => $subscription->currency,
         ]);
 
         if (isset($response['error'])) {
@@ -88,7 +88,7 @@ class RazorPayPaymentController extends Controller
         }
         $isVerified = $this->verifySignature($request->payment_order_id, $request->payment_id, $request->payment_signature, $this->razorPayKeySecret);
 
-        if (!$isVerified) {
+        if (! $isVerified) {
             return $this->errorResponse('Payment Failed');
         }
 
