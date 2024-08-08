@@ -17,13 +17,14 @@ class TwilioService
         $this->sid = env('TWILIO_ACCOUNT_SID', '');
         $this->token = env('TWILIO_AUTH_TOKEN', '');
 
-        $this->twilio = new Client($this->sid, $this->token);
     }
 
     public function sendVerificationToken(string $mobileNumber)
     {
+        $twilio = new Client($this->sid, $this->token);
+
         $serviceSid = env('TWILIO_SERVICE_SID', '');
-        $verification = $this->twilio->verify->v2
+        $verification = $twilio->verify->v2
             ->services($serviceSid)
             ->verifications->create(
                 $mobileNumber,
@@ -36,8 +37,10 @@ class TwilioService
     public function checkVerificationToken(string $mobileNumber, string $code)
     {
         try {
+            $twilio = new Client($this->sid, $this->token);
             $serviceSid = env('TWILIO_SERVICE_SID', '');
-            $verification_check = $this->twilio->verify->v2
+            
+            $verification_check = $twilio->verify->v2
                 ->services($serviceSid)
                 ->verificationChecks->create([
                     'to' => $mobileNumber,
