@@ -12,13 +12,11 @@ class TwilioService
 
     public $twilio;
 
-    public $serviceSid;
 
     public function __construct()
     {
-        $this->sid = env('TWILIO_ACCOUNT_SID', 'ACb8a37a9bef044c9a546ab5ae880ff6bf');
-        $this->token = env('TWILIO_AUTH_TOKEN', '18c80de45fe2ec9b0c761d80699cbe80');
-        $this->serviceSid = env('TWILIO_VERIFY_SERVICE_SID', 'VA73caf35b9933d1319bcffe2a07daec4d');
+        $this->sid = env('TWILIO_ACCOUNT_SID', '');
+        $this->token = env('TWILIO_AUTH_TOKEN', '');
 
         $this->twilio = new Client($this->sid, $this->token);
     }
