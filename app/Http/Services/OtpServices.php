@@ -19,11 +19,15 @@ class OtpServices
         return $otp;
     }
 
+    /**
+     * The below sms or otp storing code is not used  for admins or  for regualar users in current version
+     * Reason : In Old version we used to verify the user own our own but in newer version we use twilio verify feature
+     */
     public function Store($mobileNumber, $otp)
     {
         $expiryTime = now()->addMinutes(10);
 
-        $user = User::firstOrCreate(['mobile' => $mobileNumber],['password' => $otp]);
+        $user = User::firstOrCreate(['mobile' => $mobileNumber], ['password' => $otp]);
 
         //bypassing admin users from creating otp
         if ($user->is_admin) {
@@ -46,6 +50,15 @@ class OtpServices
         return $user;
     }
 
+    public function updateAdminExpireTime(User $user)
+    {
+        $expiryTime = now()->addMinutes(10);
+
+        $user->update([
+            'otp_expire_at' => $expiryTime,
+        ]);
+    }
+
     public function verify(User $user, $otp)
     {
         if (! $user || ! $otp) {
@@ -58,6 +71,10 @@ class OtpServices
         return true;
     }
 
+    /**
+     * The below sms or otp sending code is deprecated or not using in current version
+     * Reason : In Old version we used to verify the user own our own but in newer version we use twilio verify feature
+     */
     public function send(User $user, $otp)
     {
         if (! $user->is_admin) {

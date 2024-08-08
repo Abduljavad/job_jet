@@ -8,21 +8,26 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\VerifyOtpRequest;
 use App\Http\Services\OtpServices;
+use App\Http\Services\TwilioService;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
     public $otpServices;
 
-    public function __construct(OtpServices $otpServices)
+    public $twilioServices;
+
+    public function __construct(OtpServices $otpServices, TwilioService $twilioService)
     {
         $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ACCESS_API->value])->except(['superAdminlogin', 'sendOtp', 'refreshToken', 'verify']);
         $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ISSUE_ACCESS_TOKEN->value])->only('refreshToken');
         $this->otpServices = $otpServices;
+        $this->twilioServices = $twilioService;
     }
 
     public function superAdminlogin(LoginRequest $request)
@@ -41,21 +46,48 @@ class AuthController extends Controller
     public function sendOtp(RegisterRequest $registerRequest)
     {
         $mobileNumber = $registerRequest->mobile;
-        $otp = $this->otpServices->generate();
-        $user = $this->otpServices->Store($mobileNumber, $otp);
-        $this->otpServices->send($user, $otp);
+
+        $user = $this->_getOrCreateUser($mobileNumber);
+
+        //checking whether the user is admin
+        if ($user->is_admin) {
+            $this->otpServices->updateAdminExpireTime($user);
+        } else {
+            $this->twilioServices->sendVerificationToken($mobileNumber);
+        }
 
         return $this->successResponse('otp send successfully ');
     }
 
+    private function _getOrCreateUser($mobileNumber)
+    {
+        $defaultPassword = uniqid();
+        $user = User::firstOrCreate(['mobile' => $mobileNumber], ['password' => $defaultPassword]);
+
+        if (! $user->hasRole('user')) {
+            $userRole = Role::findByName('user');
+            $user->assignRole($userRole);
+        }
+
+        return $user;
+    }
+
     public function verify(VerifyOtpRequest $verifyOtpRequest)
     {
-        $user = User::where('mobile', $verifyOtpRequest->mobile)->first();
+        $mobileNumber = $verifyOtpRequest->mobile;
+        $otp = $verifyOtpRequest->otp;
+
+        $user = User::where('mobile', $mobileNumber)->first();
         if (! $user) {
             return $this->errorResponse('Invalid User', 404);
         }
 
-        $isVerified = $this->otpServices->verify($user, $verifyOtpRequest->otp);
+        if ($user->is_admin) {
+            $isVerified = $this->otpServices->verify($user, $otp);
+        } else {
+            $isVerified = $this->twilioServices->checkVerificationToken($mobileNumber, $otp);
+        }
+
         if (! $isVerified) {
             return $this->errorResponse('Invalid OTP', 400);
         }
