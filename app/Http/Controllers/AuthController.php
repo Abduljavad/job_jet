@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Enums\TokenAbility;
 use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\VerifyOtpRequest;
@@ -24,7 +25,7 @@ class AuthController extends Controller
 
     public function __construct(OtpServices $otpServices, TwilioService $twilioService)
     {
-        $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ACCESS_API->value])->except(['superAdminlogin', 'sendOtp', 'refreshToken', 'verify']);
+        $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ACCESS_API->value])->except(['superAdminlogin', 'sendOtp', 'refreshToken', 'verify', 'forgotPassword']);
         $this->middleware(['auth:sanctum', 'ability:'.TokenAbility::ISSUE_ACCESS_TOKEN->value])->only('refreshToken');
         $this->otpServices = $otpServices;
         $this->twilioServices = $twilioService;
@@ -146,5 +147,27 @@ class AuthController extends Controller
         $user->update(['password' => $request->new_password]);
 
         return $this->successResponse('password changed successfully');
+    }
+
+    public function forgotPassword(ForgotPasswordRequest $forgotPasswordRequest)
+    {
+        $mobileNumber = $forgotPasswordRequest->mobile;
+        $code = $forgotPasswordRequest->otp;
+        $newPassword = $forgotPasswordRequest->password;
+        $user = User::where('mobile', $mobileNumber)->first();
+
+        if (! $user || ! $user->hasRole('super_admin')) {
+            return $this->errorResponse('Invalid User', 404);
+        }
+
+        $isVerified = $this->twilioServices->checkVerificationToken($mobileNumber, $code);
+
+        if (! $isVerified) {
+            return $this->errorResponse('Invalid OTP', 400);
+        }
+
+        $user->update(['password' => $newPassword]);
+
+        return $this->successResponse('password succesfully changed');
     }
 }
