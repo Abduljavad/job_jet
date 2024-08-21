@@ -30,7 +30,7 @@ class JobController extends Controller
             return $this->errorResponse("user doesn't have active subscription", 403);
         }
 
-        return Job::with(['categories', 'location'])->whereDate('created_at', '<=', $userSubscriptionExist->end_date)->filter($filters)->paginate($request->input('limit', 20));
+        return Job::with(['categories', 'location'])->whereDate('created_at', '<=', $userSubscriptionExist->end_date)->orderBy('created_at','desc')->filter($filters)->paginate($request->input('limit', 20));
     }
 
     public function index(Request $request, JobFilter $filters)
@@ -77,7 +77,7 @@ class JobController extends Controller
     public function destroy(Job $job)
     {
         $job->delete();
-        
+
         return $this->successResponse('job deleted successfully');
     }
 }
