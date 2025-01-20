@@ -19,7 +19,6 @@ class TwilioService
         $this->sid = config('twilio.account_sid');
         $this->token = config('twilio.auth_token');
         $this->serviceSid = config('twilio.service_sid');
-
         $this->twilio = new Client($this->sid, $this->token);
     }
 
